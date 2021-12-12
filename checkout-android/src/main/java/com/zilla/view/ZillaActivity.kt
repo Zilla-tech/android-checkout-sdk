@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.zilla.EventListener
@@ -29,6 +28,7 @@ import com.zilla.di.AppContainer
 import com.zilla.di.ViewModelConstructor
 import com.zilla.di.ViewModelFactory
 import com.zilla.model.Environment
+import com.zilla.model.ErrorType
 import com.zilla.model.PaymentInfo
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -80,13 +80,18 @@ class ZillaActivity : AppCompatActivity() {
             }
 
             lifecycleScope.launch {
-                isOrderIdValid.collect {
+
+                errorStatus.collect {
+                    onError(it)
+                }
+            }
+
+            lifecycleScope.launch {
+                orderValidationSuccessful.collect {
                     Logger.log(this, "isOrderIdValid fired")
 
-                    if (it.validForPayment == true) {
-                        hideAllViewsAndShowWebView()
-                        loadUrl(it.paymentLink)
-                    }
+                    hideAllViewsAndShowWebView()
+                    loadUrl(it.paymentLink)
                 }
             }
 
@@ -159,13 +164,9 @@ class ZillaActivity : AppCompatActivity() {
         enableTouch()
     }
 
-    private fun showError(resId: Int) {
-        showError(getString(resId))
-    }
-
-    private fun showError(message: String) {
-        hideKeyBoard()
-        dismissLoading()
+    private fun onError(errorType: ErrorType) {
+        Zilla.instance.callback.onError(errorType)
+        finish()
     }
 
     private val webViewChromeClient = object : WebChromeClient() {

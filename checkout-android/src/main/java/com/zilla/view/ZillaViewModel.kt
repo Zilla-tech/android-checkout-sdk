@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.zilla.Zilla
 import com.zilla.model.ZillaParams
 import com.zilla.commons.Logger
+import com.zilla.model.ErrorType
 import com.zilla.model.TransactionType
 import com.zilla.networking.api.Result
 import com.zilla.networking.api.ZillaRepository
@@ -21,8 +22,11 @@ public class ZillaViewModel(private val zillaRepository: ZillaRepository) : View
     private val _loadingStatus = MutableSharedFlow<Boolean>()
     val loadingStatus = _loadingStatus.asSharedFlow()
 
-    private val _isOrderIdValid = MutableSharedFlow<ValidateOrderIdInfo>()
-    val isOrderIdValid = _isOrderIdValid.asSharedFlow()
+    private val _errorStatus = MutableSharedFlow<ErrorType>()
+    val errorStatus = _errorStatus.asSharedFlow()
+
+    private val _orderValidationSuccessful = MutableSharedFlow<ValidateOrderIdInfo>()
+    val orderValidationSuccessful = _orderValidationSuccessful.asSharedFlow()
 
     private val _createWithPublicKeyInfo = MutableSharedFlow<CreateWithPublicKeyInfo>()
     val createWithPublicKeyInfo = _createWithPublicKeyInfo.asSharedFlow()
@@ -49,16 +53,18 @@ public class ZillaViewModel(private val zillaRepository: ZillaRepository) : View
                     is Result.Success -> {
 
                         if (it.data.validForPayment == true) {
-                            _isOrderIdValid.emit(it.data)
+                            _orderValidationSuccessful.emit(it.data)
                         } else {
                             // Show error order is invalid.
-                            Logger.log(this, "Error occurred")
+                            Logger.log(this, "Order code not valid")
+                            _errorStatus.emit(ErrorType.ORDER_ID_NOT_VALID)
                         }
                     }
 
                     is Result.Error -> {
                         // Show error
                         Logger.log(this, "Error occurred ${it.errorMessage}")
+                        _errorStatus.emit(ErrorType.UNKNOWN_ERROR)
                     }
                 }
 
@@ -82,6 +88,7 @@ public class ZillaViewModel(private val zillaRepository: ZillaRepository) : View
                         is Result.Error -> {
                             // Show error
                             Logger.log(this, "Error occurred ${it.errorMessage}")
+                            _errorStatus.emit(ErrorType.UNKNOWN_ERROR)
                         }
                     }
                 }

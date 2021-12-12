@@ -1,8 +1,10 @@
 package com.zilla.model
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 
+@JsonClass(generateAdapter = true)
 data class PaymentInfo(
     val clientOrderReference: String = "",
     val status: String = "",

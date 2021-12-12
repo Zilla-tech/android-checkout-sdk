@@ -1,16 +1,16 @@
 package com.zilla
 
-import com.zilla.model.TransactionType
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.Keep
 import com.zilla.model.ApplicationMode
+import com.zilla.model.TransactionType
 import com.zilla.model.ZillaParams
 import com.zilla.view.ZillaActivity
 
 class Zilla {
     internal lateinit var applicationMode: ApplicationMode
-     lateinit var transactionType: TransactionType
+    lateinit var transactionType: TransactionType
     internal lateinit var zillaParams: ZillaParams
     internal lateinit var orderId: String
     internal lateinit var callback: ZillaTransactionCallback
@@ -39,7 +39,11 @@ class Zilla {
 
     }
 
-    fun completeExistingOrder(context: Context, orderId: String, callback: ZillaTransactionCallback) {
+    fun completeExistingOrder(
+        context: Context,
+        orderId: String,
+        callback: ZillaTransactionCallback
+    ) {
 
         val zilla = instance
         zilla.transactionType = TransactionType.EXISTING

@@ -1,5 +1,6 @@
 package com.zilla
 
+import com.zilla.model.ErrorType
 import com.zilla.model.PaymentInfo
 
 interface ZillaTransactionCallback {
@@ -7,5 +8,5 @@ interface ZillaTransactionCallback {
 
     fun onSuccess(paymentInfo: PaymentInfo)
 
-    fun onError()
+    fun onError(errorType: ErrorType)
 }

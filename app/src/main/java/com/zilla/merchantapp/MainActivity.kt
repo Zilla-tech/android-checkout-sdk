@@ -2,11 +2,14 @@ package com.zilla.merchantapp
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.trimmedLength
 import com.zilla.Zilla
 import com.zilla.model.ZillaParams
 import com.zilla.ZillaTransactionCallback
 import com.zilla.commons.Logger
+import com.zilla.model.ErrorType
 import com.zilla.model.PaymentInfo
 import com.zilla.model.TransactionType
 import java.util.*
@@ -17,10 +20,8 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setupZillaGateway()
-
         findViewById<Button>(R.id.payButton).setOnClickListener {
-            completeExistingOrder()
+            startNewOrder()
         }
     }
 
@@ -28,13 +29,13 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
         Zilla.instance.completeExistingOrder(this, "1111111111", this)
     }
 
-    private fun pay() {
+    private fun startNewOrder() {
         val params =
             ZillaParams.Builder(
-                publicKey = "95ced4ff2cde9d5f8537d93016b2d18efe684a4f11a947f2702990f7848120fe",
+                publicKey = "PK_DEV_f19788227b5293e06aecc54844b3faf1b8e206a932f4d2a4901f2195c4840096",
                 amount = 2000)
                 .title("Uber ride for Maduekwe Chibuike")
-                .clientOrderReference(UUID.randomUUID().toString())
+                .clientOrderReference(UUID.randomUUID().toString().substring(0,20))
                 .redirectUrl("https://zilla-website-dev.zilla.africa/")
                 .productCategory("Fashion")
                 .build()
@@ -42,10 +43,6 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
         Zilla.instance.createNewOrder(this, params, this)
     }
 
-    private fun setupZillaGateway() {
-        val zilla = Zilla.instance
-        zilla.transactionType = TransactionType.EXISTING
-    }
 
     override fun onClose() {
         Logger.log(this, "On Close")
@@ -55,6 +52,7 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
         Logger.log(this, "onSuccess $paymentInfo")
     }
 
-    override fun onError() {
+    override fun onError(errorType: ErrorType) {
+        Logger.log(this, "On Error $errorType")
     }
 }
