@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <dimen name="onboarding_logo_size">128dp</dimen>
+
+    <dimen name="padding_normal">16dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_micro">4dp</dimen>
+    <dimen name="padding_large">24dp</dimen>
+
+    <dimen name="dialog_corner_radius">8dp</dimen>
+    <dimen name="onboarding_logo_padding">120dp</dimen>
+
+</resources>
