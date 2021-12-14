@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MerchantApp</string>
+    <string name="merchant_order_id">Order Id</string>
+    <string name="pay_with_zilla">Pay with Zilla</string>
+    <string name="amount">Amount</string>
+    <string name="naira_symbol">₦</string>
+    <string name="merchant_order_title">Title</string>
 </resources>

@@ -1,3 +1,3 @@
 rootProject.name = "Zilla Checkout"
 include ':app'
-include ':checkout-android'
+include ':android-checkout-sdk'
