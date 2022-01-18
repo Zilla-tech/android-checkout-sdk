@@ -60,7 +60,7 @@ There are two ways to make use of the Zilla Checkout Sdk
 These are the `required` parameters for `completeExistingOrder()`
 
 - [`publicKey`](#key)
-- [`callback`](#https://github.com/Zilla-tech/android-checkout-sdk/blob/42065567713ca65989056d7500ca76c22309b2b2/android-checkout-sdk/src/main/java/com/zilla/ZillaTransactionCallback.kt)
+- [`callback`](https://github.com/Zilla-tech/android-checkout-sdk/blob/42065567713ca65989056d7500ca76c22309b2b2/android-checkout-sdk/src/main/java/com/zilla/ZillaTransactionCallback.kt)
 - [`orderId`](#orderId)
 
 e.g
@@ -110,6 +110,8 @@ e.g
       params,
       callback)
 ```
+
+Read more about the transaction parameters in this [doc](https://github.com/Zilla-tech/web-checkout-sdk/tree/f00a8fae126763473a61e719ed473e50a85437e7#parameters)
 
 ## Support
 
