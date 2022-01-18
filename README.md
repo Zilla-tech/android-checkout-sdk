@@ -1,4 +1,4 @@
-# Zilla Connect
+# Zilla Checkout SDK
 
 Zilla connect is an easy, fast and secure way for your users to buy now and pay later from your app. It is a drop in framework that allows you host the Zilla checkout application within your android application and allow customers make payments using any of the available payment plans.
 
