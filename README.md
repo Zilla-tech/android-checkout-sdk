@@ -30,7 +30,6 @@ dependencies {
 
 ## Requirements
 - Java 8 or higher
-- The latest version of the Zilla Checkout Android SDK
 
 Then in your code, create a new instance of the Zilla connect
 Import Checkout SDK
@@ -51,15 +50,7 @@ There are two ways to make use of the Zilla Checkout Sdk
 
 ## Usage
 
-### <a name="completeExistingOrder"></a> `completeExistingOrder`
-
-These are the `required` parameters for `completeExistingOrder()`
-
-- [`publicKey`](#key)
-- [`callback`](https://github.com/Zilla-tech/android-checkout-sdk/blob/42065567713ca65989056d7500ca76c22309b2b2/android-checkout-sdk/src/main/java/com/zilla/ZillaTransactionCallback.kt)
-- [`orderId`](#orderId)
-
-e.g
+### Completing an existing order
 
 ```kotlin
 val callback = object : ZillaTransactionCallback{
@@ -76,19 +67,7 @@ Zilla.instance.completeExistingOrder(
             "orderId",
             callback)
 ```
-
-### <a name="createNewOrder"></a> `openNew`
-
-These are the `required` parameters for `openNew()`
-
-- [`publicKey`](#key)
-- [`callback`](https://github.com/Zilla-tech/android-checkout-sdk/blob/42065567713ca65989056d7500ca76c22309b2b2/android-checkout-sdk/src/main/java/com/zilla/ZillaTransactionCallback.kt)
-- [`clientOrderReference`](#clientOrderReference)
-- [`title`](#title)
-- [`amount`](#amount)
-
-e.g
-
+### Creating a new order
 
 ```kotlin
 
