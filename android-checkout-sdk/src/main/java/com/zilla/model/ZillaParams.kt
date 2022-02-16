@@ -9,8 +9,7 @@ class ZillaParams private constructor(
     val type: String
 ) {
 
-
-    data class Builder(
+    class Builder(
         var amount: Int,
         var title: String = "",
         var productCategory: String = "",
@@ -18,6 +17,11 @@ class ZillaParams private constructor(
         var clientOrderReference: String = "",
         var type: String = ""
     ) {
+
+        fun amount(amount: Int) = apply {
+            this.amount = amount
+        }
+
         fun title(title: String) = apply {
             this.title = title
         }

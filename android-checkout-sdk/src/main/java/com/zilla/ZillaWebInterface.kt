@@ -19,6 +19,10 @@ class ZillaWebInterface(private val eventListener: EventListener) {
                 Logger.log(this, "ZILLA EVENT_CLOSED")
                 eventListener.onClose()
             }
+            Constants.EVENT_REQUEST_CAMERA_PERMISSION -> {
+                Logger.log(this, "ZILLA EVENT_CAMERA")
+                eventListener.onRequestCameraPermission()
+            }
             Constants.EVENT_COMPLETED_PAYMENT -> {
                 Logger.log(this, "ZILLA EVENT_COMPLETED_PAYMENT")
                 PaymentInfo.fromJson(event.data ?: "")?.let {

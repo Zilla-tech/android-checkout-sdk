@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
     private fun completeExistingOrder() {
         Zilla.instance.completeExistingOrder(
             this,
-            "PK_DEV_a6b0cdb980c48e80c8a8187330b88fc47cfb1165d999efc0188700ae7aafd6c3",
+            Constants.PUBLIC_KEY,
             "1111111111", this)
     }
 
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
         val title = findViewById<TextInputEditText>(R.id.merchant_order_title).text.toString()
 
         val params =
-            ZillaParams.Builder(amount = amount)
+            ZillaParams.Builder(amount)
                 .title(title)
                 .clientOrderReference(UUID.randomUUID().toString().substring(0, 20))
                 .redirectUrl("https://zilla-website-dev.zilla.africa/")
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), ZillaTransactionCallback {
 
         Zilla.instance.createNewOrder(
             this,
-            "PK_DEV_a6b0cdb980c48e80c8a8187330b88fc47cfb1165d999efc0188700ae7aafd6c3",
+            Constants.PUBLIC_KEY,
             params, this
         )
     }
