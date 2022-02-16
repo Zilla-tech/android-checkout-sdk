@@ -1,18 +1,18 @@
 package com.zilla.view
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.RelativeLayout
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -31,10 +31,13 @@ import com.zilla.model.ErrorType
 import com.zilla.model.PaymentInfo
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class ZillaActivity : AppCompatActivity() {
+
+    private var request: PermissionRequest? = null
+    private val REQUEST_CODE_ASK_PERMISSIONS = 101
+
     private lateinit var binding: ActivityZillaBinding
 
     private lateinit var viewModel: ZillaViewModel
@@ -86,7 +89,6 @@ class ZillaActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 orderValidationSuccessful.collect {
-                    Logger.log(this, "isOrderIdValid fired")
                     hideAllViewsAndShowWebView()
                     loadUrl(it.paymentLink)
                 }
@@ -94,7 +96,6 @@ class ZillaActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 createWithPublicKeyInfo.collect {
-                    Logger.log(this, "createWithPublicKeyInfo fired")
                     hideAllViewsAndShowWebView()
                     loadUrl(it.paymentLink)
                 }
@@ -111,12 +112,16 @@ class ZillaActivity : AppCompatActivity() {
     private fun prepareWebView() {
         binding.webView.settings.javaScriptEnabled = true
         binding.webView.settings.domStorageEnabled = true
+        binding.webView.settings.allowFileAccess = true
+        binding.webView.settings.allowFileAccessFromFileURLs = true
+        binding.webView.settings.allowUniversalAccessFromFileURLs = true
         binding.webView.isScrollbarFadingEnabled = false
         binding.webView.isVerticalScrollBarEnabled = true
         binding.webView.isHorizontalScrollBarEnabled = true
         binding.webView.scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
         binding.webView.settings.useWideViewPort = true
         binding.webView.settings.loadWithOverviewMode = true
+        binding.webView.settings.mediaPlaybackRequiresUserGesture = false;
 
         try {
             binding.webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
@@ -126,13 +131,9 @@ class ZillaActivity : AppCompatActivity() {
         binding.webView.webViewClient = webViewClient
         binding.webView.webChromeClient = webViewChromeClient
 
-        val webInterface = ZillaWebInterface( eventListener)
+        val webInterface = ZillaWebInterface(eventListener)
 
         binding.webView.addJavascriptInterface(webInterface, "ZillaWebInterface")
-    }
-
-    private fun closeWebView() {
-
     }
 
     private fun loadUrl(paymentLink: String?) {
@@ -170,21 +171,80 @@ class ZillaActivity : AppCompatActivity() {
         override fun onProgressChanged(view: WebView, progress: Int) {
             binding.webViewProgressBar.progress = progress
         }
+
+        override fun onPermissionRequest(request: PermissionRequest?) {
+            this@ZillaActivity.request = request
+            val requestedResources = request!!.resources
+            for (r in requestedResources) {
+                if (r == PermissionRequest.RESOURCE_VIDEO_CAPTURE) {
+                    checkPermission(request)
+                    binding.webView.loadUrl("javascript:document.getElementById('VideoClipPlayButton').style.visibility = 'hidden';");
+                }
+            }
+        }
     }
+
+    private fun checkPermission(request: PermissionRequest?) {
+        if (hasCameraPermission() && hasStoragePermission()) {
+            request?.grant(arrayOf(PermissionRequest.RESOURCE_VIDEO_CAPTURE))
+        } else {
+            requestPermissions.launch(
+                arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA,
+                )
+            )
+        }
+    }
+
+    private val requestPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var granted = true
+            permissions.entries.forEach {
+                val isGranted = it.value
+                if (!isGranted) {
+                    granted = it.value
+                }
+            }
+            if (granted) {
+                request?.grant(arrayOf(PermissionRequest.RESOURCE_VIDEO_CAPTURE))
+            }
+        }
+
+    private fun hasCameraPermission() = ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasStoragePermission() = ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
 
     private val webViewClient = object : WebViewClient() {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            Logger.log(this, "Current $url loading in WebView")
+            Logger.log(this, "onPageStarted $url loading in WebView")
             super.onPageStarted(view, url, favicon)
             binding.webViewProgressBar.visibility = View.VISIBLE
+
+            if (url.contains("/capture", true)) {
+                if (!hasCameraPermission()) {
+                    requestPermissions.launch(
+                        arrayOf(
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA,
+                        )
+                    )
+                }
+            }
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
-            binding.webViewProgressBar.visibility = View.GONE
-
             Logger.log(this, "onPageFinished $url loading in WebView")
+
+            binding.webViewProgressBar.visibility = View.GONE
         }
     }
 
@@ -198,5 +258,20 @@ class ZillaActivity : AppCompatActivity() {
             Zilla.instance.callback.onSuccess(paymentInfo)
             finish()
         }
+
+        override fun onRequestCameraPermission() {
+            if (!hasCameraPermission()) {
+                requestPermissions.launch(
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA,
+                    )
+                )
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+
     }
 }

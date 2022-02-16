@@ -13,14 +13,10 @@ import kotlinx.coroutines.flow.flowOn
 class ZillaRepositoryImpl(private val remoteSource: ZillaRemoteSource) : ZillaRepository {
     override suspend fun validateOrderId(publicKey: String,
                                          orderId: String,): Flow<Result<ValidateOrderIdInfo>> {
-        Logger.log(this, "ZillaRepositoryImpl validateOrderId called")
-
         return try {
             flow {
                 emit(getAPIResult(remoteSource.validateOrderId(publicKey, orderId)))
             }.catch {
-                Logger.log(this, it.stackTraceToString())
-                Logger.log(this, it.toString())
                 emit(Result.Error(GENERIC_ERROR_CODE, GENERIC_ERROR_MESSAGE))
             }.flowOn(Dispatchers.IO)
         } catch (e: Exception) {
@@ -30,14 +26,10 @@ class ZillaRepositoryImpl(private val remoteSource: ZillaRemoteSource) : ZillaRe
     }
 
     override suspend fun createWithPublicKey(publicKey: String, request: CreateWithPublicKeyRequest): Flow<Result<CreateWithPublicKeyInfo>> {
-        Logger.log(this, "ZillaRepositoryImpl createWithPublicKey called")
-
         return try {
             flow {
                 emit(getAPIResult(remoteSource.createWithPublicKey(publicKey, request)))
             }.catch {
-                Logger.log(this, it.stackTraceToString())
-                Logger.log(this, it.toString())
                 emit(Result.Error(GENERIC_ERROR_CODE, GENERIC_ERROR_MESSAGE))
             }.flowOn(Dispatchers.IO)
         } catch (e: Exception) {

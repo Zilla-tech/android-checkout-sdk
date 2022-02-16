@@ -26,18 +26,9 @@ class TouchableWebView : WebView {
         if (event.findPointerIndex(0) == -1) {
             return super.onTouchEvent(event)
         }
-
         requestDisallowInterceptTouchEvent(true)
 
         performClick()
         return super.onTouchEvent(event)
     }
-
-    override fun onCreateInputConnection(outAttrs: EditorInfo?): InputConnection {
-        val inputConnection = BaseInputConnection(this, false)
-        outAttrs?.imeOptions = EditorInfo.IME_ACTION_DONE
-//        val inputConnection = super.onCreateInputConnection(outAttrs)
-        return inputConnection
-    }
-
 }
