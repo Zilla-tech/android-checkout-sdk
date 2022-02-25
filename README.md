@@ -24,7 +24,7 @@ allprojects {
 
 ```sh
 dependencies {
-  implementation 'com.github.Zilla-tech:android-checkout-sdk:1.0.2-alpha
+  implementation 'com.usezilla:android-checkout-sdk:1.0.0-alpha01'
 }
 ```
 
